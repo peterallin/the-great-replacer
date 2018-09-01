@@ -2,9 +2,8 @@ extern crate git2;
 
 use git2::{Repository, BranchType};
 
-fn find_branches(repo_path: &str) -> Result<Vec<String>, git2::Error> {
+fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
     let mut result = Vec::new();
-    let repo = Repository::open(repo_path)?;
     let branches = repo.branches(Some(BranchType::Local))?;
     for maybe_branch in branches {
         let branch = maybe_branch?;
@@ -18,7 +17,8 @@ fn find_branches(repo_path: &str) -> Result<Vec<String>, git2::Error> {
 }
 
 fn run() -> Result<(), git2::Error> {
-    let branches = find_branches("/home/pal/rust_again/renamee")?;
+    let repo = Repository::open("/home/pal/rust_again/renamee")?;
+    let branches = find_branches(&repo)?;
     for b in branches {
         println!("Branch: {}", b);
     }
