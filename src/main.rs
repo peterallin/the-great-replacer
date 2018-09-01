@@ -12,7 +12,6 @@ fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
             None => {}
         }
     };
-    repo.set_head("refs/heads/old")?;
     Ok(result)
 }
 
