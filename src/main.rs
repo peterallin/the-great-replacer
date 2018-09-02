@@ -1,18 +1,23 @@
 extern crate git2;
 
 mod gittools;
-use gittools::{find_branches, do_in_branches, Repository};
+use gittools::{do_in_branches, find_branches, Repository};
 
 mod replace;
 
 use std::path::Path;
 
-fn run() -> Result<(), gittools::Error> {
-    let change_path = Path::new("snafu");
-    let repo = Repository::open("/home/pal/rust_again/renamee")?;
+fn replace(
+    repo_path: &Path,
+    filename: &str,
+    name: &str,
+    email: &str,
+    message: &str,
+) -> Result<(), gittools::Error> {
+    let change_path = Path::new(filename);
+    let repo = Repository::open(repo_path)?;
     let branches = find_branches(&repo)?;
-    let sig = git2::Signature::now("The Great Replacer", "repl@repl.repl")?;
-    let message = "Replaced by the great replacer";
+    let sig = gittools::signature(name, email)?;
 
     do_in_branches(&repo, &branches, |_branch, workdir| {
         let change_path_abs = workdir.join(change_path);
@@ -37,7 +42,13 @@ fn run() -> Result<(), gittools::Error> {
 }
 
 fn main() {
-    match run() {
+    match replace(
+        Path::new("/home/pal/rust_again/renamee"),
+        "snafu",
+        "The Great Replacer",
+        "repl@repl.repl",
+        "Replaced by the great replacer",
+    ) {
         Ok(_) => {}
         Err(e) => {
             println!("Error: {}", e);

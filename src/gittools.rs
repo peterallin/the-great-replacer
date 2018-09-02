@@ -3,7 +3,7 @@ extern crate git2;
 use self::git2::BranchType;
 use std::path::Path;
 
-pub use self::git2::{Error, Repository};
+pub use self::git2::{Error, Repository, Signature};
 
 pub fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
     let mut result = Vec::new();
@@ -33,6 +33,10 @@ pub fn do_in_branches<F>(
         f(branch, workdir)?;
     }
     Ok(())
+}
+
+pub fn signature<'a>(name: &'a str, email: &'a str) -> Result<Signature<'a>, git2::Error> {
+    Signature::now(name, email)
 }
 
 fn checkout_branch(repo: &Repository, ref_name: &str) -> Result<(), git2::Error> {
