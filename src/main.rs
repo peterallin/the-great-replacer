@@ -38,11 +38,7 @@ fn main() {
         }
     }
 
-    match replace::replace_in_file(
-        Path::new("/home/pal/replace_in_me.txt"),
-        "baz",
-        "...",
-    ) {
+    match replace::replace_in_file(Path::new("/home/pal/replace_in_me.txt"), "baz", "...") {
         Ok(_) => {}
         Err(e) => {
             println!("Error when replacing: {}", e);

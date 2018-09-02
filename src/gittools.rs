@@ -3,7 +3,7 @@ extern crate git2;
 use self::git2::BranchType;
 use std::path::Path;
 
-pub use self::git2::{Repository, Error};
+pub use self::git2::{Error, Repository};
 
 pub fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
     let mut result = Vec::new();
@@ -14,24 +14,25 @@ pub fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
             Some(b) => result.push(b.to_string()),
             None => {}
         }
-    };
+    }
     Ok(result)
 }
 
-pub fn look_at_branches(repo: &Repository,
-                        branches: &Vec<String>,
-                        f: fn(&str, &Path) -> Result<(), git2::Error>) -> Result<(), git2::Error> {
+pub fn look_at_branches(
+    repo: &Repository,
+    branches: &Vec<String>,
+    f: fn(&str, &Path) -> Result<(), git2::Error>,
+) -> Result<(), git2::Error> {
     for branch in branches {
         checkout_branch(&repo, &branch)?;
         let workdir = match repo.workdir() {
             None => return Err(git2::Error::from_str("Cannot work on a bare repo")),
-            Some(wd) => wd
+            Some(wd) => wd,
         };
         f(branch, workdir)?;
     }
     Ok(())
 }
-
 
 fn checkout_branch(repo: &Repository, ref_name: &str) -> Result<(), git2::Error> {
     let treeish = repo.revparse_single(ref_name)?;
@@ -39,4 +40,3 @@ fn checkout_branch(repo: &Repository, ref_name: &str) -> Result<(), git2::Error>
     repo.set_head(ref_name)?;
     Ok(())
 }
-
