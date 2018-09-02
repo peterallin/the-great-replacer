@@ -1,8 +1,10 @@
 mod gittools;
-use gittools::{Repository, find_branches, look_at_branches};
+use gittools::{find_branches, look_at_branches, Repository};
 
-use std::path::Path;
+mod replace;
+
 use std::fs;
+use std::path::Path;
 
 fn run() -> Result<(), gittools::Error> {
     let repo = Repository::open("/home/pal/rust_again/renamee")?;
@@ -32,6 +34,18 @@ fn main() {
         Ok(_) => {}
         Err(e) => {
             println!("Error: {}", e);
+            std::process::exit(1);
+        }
+    }
+
+    match replace::replace_in_file(
+        Path::new("/home/pal/replace_in_me.txt"),
+        "baz",
+        "...",
+    ) {
+        Ok(_) => {}
+        Err(e) => {
+            println!("Error when replacing: {}", e);
             std::process::exit(1);
         }
     }
