@@ -40,15 +40,7 @@ fn main() {
     match run() {
         Ok(_) => {}
         Err(e) => {
-            println!("git2 Error: {}", e);
-            std::process::exit(1);
-        }
-    }
-
-    match replace::replace_in_file(Path::new("/home/pal/replace_in_me.txt"), "baz", "...") {
-        Ok(_) => {}
-        Err(e) => {
-            println!("Error when replacing: {}", e);
+            println!("Error: {}", e);
             std::process::exit(1);
         }
     }
