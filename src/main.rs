@@ -1,7 +1,7 @@
 extern crate git2;
 
 mod gittools;
-use gittools::{do_in_branches, find_branches, Repository};
+use gittools::{commit_single_file, do_in_branches, find_branches, Repository};
 
 mod replace;
 
@@ -19,7 +19,6 @@ fn replace(
     let change_path = Path::new(filename);
     let repo = Repository::open(repo_path)?;
     let branches = find_branches(&repo)?;
-    let sig = gittools::signature(name, email)?;
 
     do_in_branches(&repo, &branches, |_branch, workdir| {
         let change_path_abs = workdir.join(change_path);
@@ -27,17 +26,7 @@ fn replace(
             Ok(_) => {}
             Err(e) => return Err(gittools::Error::from_str(&format!("Replacing failed: {}", e)))
         };
-        let mut index = repo.index()?;
-        index.add_path(change_path)?;
-        index.write()?;
-        let tree_oid = index.write_tree()?;
-        let head = repo.head()?.resolve()?.peel(git2::ObjectType::Commit)?;
-        let parent_commit = match head.into_commit() {
-            Ok(commit) => commit,
-            Err(obj) => return Err(git2::Error::from_str(&format!("{} is not a commit", obj.id())))
-        };
-        let new_tree = repo.find_tree(tree_oid)?;
-        repo.commit(Some("HEAD"), &sig, &sig, message, &new_tree, &[&parent_commit])?;
+        commit_single_file(&repo, &change_path, name, email, message)?;
         Ok(())
     })?;
     Ok(())

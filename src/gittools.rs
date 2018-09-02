@@ -35,8 +35,21 @@ pub fn do_in_branches<F>(
     Ok(())
 }
 
-pub fn signature<'a>(name: &'a str, email: &'a str) -> Result<Signature<'a>, git2::Error> {
-    Signature::now(name, email)
+
+pub fn commit_single_file(repo: &Repository, file_path: &Path, name: &str, email: &str, msg: &str) -> Result<(), git2::Error> {
+    let mut index = repo.index()?;
+    index.add_path(file_path)?;
+    index.write()?;
+    let tree_oid = index.write_tree()?;
+    let head = repo.head()?.resolve()?.peel(git2::ObjectType::Commit)?;
+    let parent_commit = match head.into_commit() {
+        Ok(commit) => commit,
+        Err(obj) => return Err(git2::Error::from_str(&format!("{} is not a commit", obj.id())))
+    };
+    let new_tree = repo.find_tree(tree_oid)?;
+    let sig = Signature::now(name, email)?;
+    repo.commit(Some("HEAD"), &sig, &sig, msg, &new_tree, &[&parent_commit])?;
+    Ok(())
 }
 
 fn checkout_branch(repo: &Repository, ref_name: &str) -> Result<(), git2::Error> {
