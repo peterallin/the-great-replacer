@@ -1,7 +1,7 @@
 extern crate git2;
 
 use self::git2::BranchType;
-use std::fs;
+use std::path::Path;
 
 pub use self::git2::{Repository, Error};
 
@@ -18,25 +18,16 @@ pub fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
     Ok(result)
 }
 
-pub fn look_at_branches(repo: &Repository, branches: &Vec<String>) -> Result<(), git2::Error> {
-    for b in branches {
-        println!("Branch: {}", b);
-        checkout_branch(&repo, &b)?;
+pub fn look_at_branches(repo: &Repository,
+                        branches: &Vec<String>,
+                        f: fn(&str, &Path) -> Result<(), git2::Error>) -> Result<(), git2::Error> {
+    for branch in branches {
+        checkout_branch(&repo, &branch)?;
         let workdir = match repo.workdir() {
             None => return Err(git2::Error::from_str("Cannot work on a bare repo")),
             Some(wd) => wd
         };
-        let iter = match fs::read_dir(workdir) {
-            Ok(val) => val,
-            Err(e) => {
-                let msg = format!("Could not read the workdir: {}", e);
-                return Err(git2::Error::from_str(&msg));
-            }
-        };
-        for path in iter {
-            println!("{:?}", path)
-        }
-        println!("--------------------------------------------");
+        f(branch, workdir)?;
     }
     Ok(())
 }
