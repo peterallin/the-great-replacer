@@ -5,3 +5,4 @@ authors = ["Peter Allin <peter@peca.dk>"]
 
 [dependencies]
 git2 = "0.7"
+clap = "2.32"

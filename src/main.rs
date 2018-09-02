@@ -1,5 +1,3 @@
-extern crate git2;
-
 mod gittools;
 use gittools::{commit_single_file, do_in_branches, find_branches, Repository};
 
