@@ -1,5 +1,5 @@
 [package]
-name = "the-great-renamer"
+name = "the-great-replacer"
 version = "0.1.0"
 authors = ["Peter Allin <peter@peca.dk>"]
 

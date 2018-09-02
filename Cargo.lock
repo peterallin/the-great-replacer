@@ -143,7 +143,7 @@ version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "the-great-renamer"
+name = "the-great-replacer"
 version = "0.1.0"
 dependencies = [
  "git2 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
