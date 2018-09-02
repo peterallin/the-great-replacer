@@ -10,6 +10,8 @@ use std::path::Path;
 fn replace(
     repo_path: &Path,
     filename: &str,
+    from: &str,
+    to: &str,
     name: &str,
     email: &str,
     message: &str,
@@ -21,7 +23,7 @@ fn replace(
 
     do_in_branches(&repo, &branches, |_branch, workdir| {
         let change_path_abs = workdir.join(change_path);
-        match replace::replace_in_file(change_path_abs.as_path(), "A", "AA") {
+        match replace::replace_in_file(change_path_abs.as_path(), from, to) {
             Ok(_) => {}
             Err(e) => return Err(gittools::Error::from_str(&format!("Replacing failed: {}", e)))
         };
@@ -45,6 +47,8 @@ fn main() {
     match replace(
         Path::new("/home/pal/rust_again/renamee"),
         "snafu",
+        "U",
+        "UU",
         "The Great Replacer",
         "repl@repl.repl",
         "Replaced by the great replacer",
