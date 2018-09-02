@@ -18,11 +18,12 @@ pub fn find_branches(repo: &Repository) -> Result<Vec<String>, git2::Error> {
     Ok(result)
 }
 
-pub fn look_at_branches(
+pub fn do_in_branches<F>(
     repo: &Repository,
     branches: &Vec<String>,
-    f: fn(&str, &Path) -> Result<(), git2::Error>,
-) -> Result<(), git2::Error> {
+    f: F,
+) -> Result<(), git2::Error> where
+    F: Fn(&str, &Path) -> Result<(), self::Error> {
     for branch in branches {
         checkout_branch(&repo, &branch)?;
         let workdir = match repo.workdir() {
